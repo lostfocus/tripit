@@ -53,6 +53,9 @@ class OAuthConsumerCredential implements CredentialInterface
         return $this->oauthRequestorId;
     }
 
+    /**
+     * @param  array<string, string|string[]>|null  $args
+     */
     public function authorize(\CurlHandle $curl, string $httpMethod, string $realm, string $baseUrl, ?array $args = null): \CurlHandle
     {
         $authorization_header = $this->generateAuthorizationHeader($httpMethod, $realm, $baseUrl, $args);
@@ -61,6 +64,13 @@ class OAuthConsumerCredential implements CredentialInterface
         return $curl;
     }
 
+    /**
+     * @param  string  $httpMethod
+     * @param  string  $realm
+     * @param  string  $baseUrl
+     * @param  array<string, string|string[]>|null  $args
+     * @return string
+     */
     private function generateAuthorizationHeader(string $httpMethod, string $realm, string $baseUrl, ?array $args = null): string
     {
         $authorization_header = 'OAuth realm="'.$realm.'",';
@@ -68,7 +78,11 @@ class OAuthConsumerCredential implements CredentialInterface
         $params = [];
         foreach ($this->generateOauthParameters($httpMethod, $baseUrl, $args) as $k => $v) {
             if (str_starts_with($k, 'oauth') || str_starts_with($k, 'xoauth')) {
-                $params[] = OAuthUtil::urlencodeRFC3986($k).'="'.OAuthUtil::urlencodeRFC3986((string)$v).'"';
+                $k = OAuthUtil::urlencodeRFC3986($k);
+                $v = OAuthUtil::urlencodeRFC3986((string)$v);
+                assert(is_string($k));
+                assert(is_string($v));
+                $params[] = $k.'="'.$v.'"';
             }
         }
         $authorization_header .= implode(',', $params);
@@ -76,6 +90,12 @@ class OAuthConsumerCredential implements CredentialInterface
         return $authorization_header;
     }
 
+    /**
+     * @param  string  $httpMethod
+     * @param  string  $baseUrl
+     * @param  array<string, string|string[]>|null  $args
+     * @return array<string, string|int>
+     */
     private function generateOauthParameters(string $httpMethod, string $baseUrl, ?array $args = null): array
     {
         $httpMethod = strtoupper($httpMethod);
@@ -106,28 +126,41 @@ class OAuthConsumerCredential implements CredentialInterface
         return $parameters;
     }
 
+    /**
+     * @param  string  $httpMethod
+     * @param  string  $baseUrl
+     * @param  array<string, string|string[]|int>  $params
+     * @return string
+     */
     private function generateSignature(string $httpMethod, string $baseUrl, array $params): string
     {
-        $normalized_parameters = OAuthUtil:: urlencodeRFC3986($this->getSignableParameters($params));
+        $normalized_parameters = OAuthUtil::urlencodeRFC3986($this->getSignableParameters($params));
+        $normalized_http_url = OAuthUtil::urlencodeRFC3986($baseUrl);
 
-        $normalized_http_url = OAuthUtil:: urlencodeRFC3986($baseUrl);
+        assert(is_string($normalized_parameters));
+        assert(is_string($normalized_http_url));
 
         $base_string = $httpMethod.'&'.$normalized_http_url;
         if ($normalized_parameters) {
             $base_string .= '&'.$normalized_parameters;
         }
 
-        $key_parts = array($this->oauthConsumerSecret, $this->oauthTokenSecret);
+        $keyParts = [$this->oauthConsumerSecret, $this->oauthTokenSecret];
 
-        $key_parts = array_map(array(
+        /** @var string[] $keyParts */
+        $keyParts = array_map([
             OAuthUtil::class,
             'urlencodeRFC3986',
-        ), $key_parts);
-        $key = implode('&', $key_parts);
+        ], $keyParts);
+        $key = implode('&', $keyParts);
 
         return base64_encode(hash_hmac('sha1', $base_string, $key, true));
     }
 
+    /**
+     * @param  array<string, int|string|string[]>  $params
+     * @return string
+     */
     private function getSignableParameters(array $params): string
     {
         // Remove oauth_signature if present
@@ -136,21 +169,24 @@ class OAuthConsumerCredential implements CredentialInterface
         }
 
         // Urlencode both keys and values
-        $keys = array_map(array(
+        /** @var array<int, int|string> $keys */
+        $keys = array_map([
             OAuthUtil::class,
             'urlencodeRFC3986',
-        ), array_keys($params));
+        ], array_keys($params));
         $values = array_map([
             OAuthUtil::class,
             'urlencodeRFC3986',
         ], array_values($params));
+
+        /** @var array<string, string|string[]> $params */
         $params = array_combine($keys, $values);
 
         // Sort by keys (natsort)
         uksort($params, 'strnatcmp');
 
         // Generate key=value pairs
-        $pairs = array();
+        $pairs = [];
         foreach ($params as $key => $value) {
             if (is_array($value)) {
                 // If the value is an array, it's because there are multiple
@@ -166,16 +202,6 @@ class OAuthConsumerCredential implements CredentialInterface
 
         // Return the pairs, concated with &
         return implode('&', $pairs);
-    }
-
-    public function validateSignature(string $url): bool
-    {
-        [$baseUrl, $query] = explode('?', $url, 2);
-        $params = [];
-        parse_str($query, $params);
-        $signature = $params['oauth_signature'];
-
-        return ($signature === $this->generateSignature('GET', $baseUrl, $params));
     }
 
     /**

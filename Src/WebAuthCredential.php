@@ -22,6 +22,9 @@ class WebAuthCredential implements CredentialInterface
         return $this->password;
     }
 
+    /**
+     * @param  array<string, mixed>|null  $args
+     */
     public function authorize(\CurlHandle $curl, string $httpMethod, string $realm, string $baseUrl, ?array $args = null): \CurlHandle
     {
         curl_setopt($curl, CURLOPT_USERPWD, $this->username.":".$this->password);

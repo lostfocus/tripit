@@ -19,8 +19,10 @@ class Tripit
     }
 
     /**
+     * @param  int|string  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_trip(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -31,9 +33,9 @@ class Tripit
 
     /**
      * @param  string  $funcName
-     * @param  array|null  $urlArgs
-     * @param  array|null  $postArgs
-     * @return array|\SimpleXMLElement
+     * @param  array<string, string|int>|null  $urlArgs
+     * @param  array<string, string|int|array<string|int, mixed>>|null  $postArgs
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
      * @throws \Exception
      */
@@ -44,10 +46,13 @@ class Tripit
         $entity = count($pieces) > 1 ? $pieces[1] : null;
 
         $response = $this->doRequest($verb, $entity, $urlArgs, $postArgs);
+        if (!is_string($response)) {
+            throw new \RuntimeException('Response is not a string');
+        }
         $format = 'xml';
-        if (isset($urlArgs) && array_key_exists('format', $urlArgs)) {
+        if (isset($urlArgs) && array_key_exists('format', $urlArgs) && is_string($urlArgs['format'])) {
             $format = $urlArgs['format'];
-        } elseif (isset($postArgs) && array_key_exists('format', $postArgs)) {
+        } elseif (isset($postArgs) && array_key_exists('format', $postArgs) && is_string($postArgs['format'])) {
             $format = $postArgs['format'];
         }
         if (strtolower($format) === 'json') {
@@ -60,6 +65,13 @@ class Tripit
         return $this->xmlToPhp($response);
     }
 
+    /**
+     * @param  string  $verb
+     * @param  string|null  $entity
+     * @param  array<string, string|int>|null  $urlArgs
+     * @param  array<string, string|int|array<string|int, mixed>>|null  $postArgs
+     * @return bool|string
+     */
     private function doRequest(string $verb, ?string $entity = null, ?array $urlArgs = null, ?array $postArgs = null): bool|string
     {
         if (in_array($verb, array('/oauth/request_token', '/oauth/access_token'))) {
@@ -75,7 +87,7 @@ class Tripit
             $args = $urlArgs;
             $pairs = array();
             foreach ($urlArgs as $name => $value) {
-                $pairs[] = urlencode($name).'='.urlencode($value);
+                $pairs[] = urlencode((string)$name).'='.urlencode((string)$value);
             }
             $url = $baseUrl.'?'.implode('&', $pairs);
         } else {
@@ -125,8 +137,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_air(string|int $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -136,8 +150,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_lodging(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -147,8 +163,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_car(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -158,8 +176,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_rail(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -169,8 +189,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_transport(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -180,8 +202,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_cruise(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -191,8 +215,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_restaurant(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -202,8 +228,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_activity(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -213,8 +241,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_note(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -224,8 +254,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_map(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -235,8 +267,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_directions(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -246,8 +280,9 @@ class Tripit
     }
 
     /**
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_profile(array $filter = null): \SimpleXMLElement|array
     {
@@ -255,8 +290,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function get_points_program(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -266,8 +303,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_trip(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -277,8 +316,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_air(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -288,8 +329,10 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_lodging(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
@@ -299,215 +342,270 @@ class Tripit
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_car(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
         $filter['id'] = $id;
 
-        return $this->parseCommand(__FUNCTION__, $filter);
+        return $this->parseCommand(__FUNCTION__, urlArgs: $filter);
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_rail(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
         $filter['id'] = $id;
 
-        return $this->parseCommand(__FUNCTION__, $filter);
+        return $this->parseCommand(__FUNCTION__, urlArgs: $filter);
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_transport(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
         $filter['id'] = $id;
 
-        return $this->parseCommand(__FUNCTION__, $filter);
+        return $this->parseCommand(__FUNCTION__, urlArgs: $filter);
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_cruise(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
         $filter['id'] = $id;
 
-        return $this->parseCommand(__FUNCTION__, $filter);
+        return $this->parseCommand(__FUNCTION__, urlArgs: $filter);
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_restaurant(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
         $filter['id'] = $id;
 
-        return $this->parseCommand(__FUNCTION__, $filter);
+        return $this->parseCommand(__FUNCTION__, urlArgs: $filter);
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_activity(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
         $filter['id'] = $id;
 
-        return $this->parseCommand(__FUNCTION__, $filter);
+        return $this->parseCommand(__FUNCTION__, urlArgs: $filter);
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_note(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
         $filter['id'] = $id;
 
-        return $this->parseCommand(__FUNCTION__, $filter);
+        return $this->parseCommand(__FUNCTION__, urlArgs: $filter);
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_map(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
         $filter['id'] = $id;
 
-        return $this->parseCommand(__FUNCTION__, $filter);
+        return $this->parseCommand(__FUNCTION__, urlArgs: $filter);
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function delete_directions(int|string $id, array $filter = []): \SimpleXMLElement|array
     {
         $filter['id'] = $id;
 
-        return $this->parseCommand(__FUNCTION__, $filter);
+        return $this->parseCommand(__FUNCTION__, urlArgs: $filter);
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function replace_trip($id, $data, $format = 'xml'): \SimpleXMLElement|array
+    public function replace_trip(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
+    {
+        return $this->parseCommand(__FUNCTION__, postArgs: ['id' => $id, 'format' => $format, $format => $data]);
+    }
+
+    /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
+     * @throws \JsonException
+     */
+    public function replace_air(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
         return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function replace_air($id, $data, $format = 'xml'): \SimpleXMLElement|array
+    public function replace_lodging(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
         return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function replace_lodging($id, $data, $format = 'xml'): \SimpleXMLElement|array
+    public function replace_car(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
         return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function replace_car($id, $data, $format = 'xml'): \SimpleXMLElement|array
+    public function replace_rail(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
         return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function replace_rail($id, $data, $format = 'xml'): \SimpleXMLElement|array
+    public function replace_transport(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
         return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function replace_transport($id, $data, $format = 'xml'): \SimpleXMLElement|array
+    public function replace_cruise(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
         return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function replace_cruise($id, $data, $format = 'xml'): \SimpleXMLElement|array
+    public function replace_restaurant(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
         return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function replace_restaurant($id, $data, $format = 'xml'): \SimpleXMLElement|array
+    public function replace_activity(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
         return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function replace_activity($id, $data, $format = 'xml'): \SimpleXMLElement|array
+    public function replace_note(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
         return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function replace_note($id, $data, $format = 'xml'): \SimpleXMLElement|array
+    public function replace_map(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
         return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
     }
 
     /**
+     * @param  string|int  $id
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function replace_map($id, $data, $format = 'xml'): \SimpleXMLElement|array
+    public function replace_directions(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
         return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
     }
 
     /**
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
-     */
-    public function replace_directions($id, $data, $format = 'xml'): \SimpleXMLElement|array
-    {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
-    }
-
-    /**
-     * @throws \JsonException
-     * @throws \Exception
      */
     public function list_trip(?array $filter = null): \SimpleXMLElement|array
     {
@@ -515,8 +613,9 @@ class Tripit
     }
 
     /**
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function list_object(?array $filter = null): \SimpleXMLElement|array
     {
@@ -524,8 +623,9 @@ class Tripit
     }
 
     /**
+     * @param  array<string, string|int>  $filter
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function list_points_program(?array $filter = null): \SimpleXMLElement|array
     {
@@ -533,8 +633,10 @@ class Tripit
     }
 
     /**
+     * @param  array<string|int, string|int|array<string|int, mixed>>  $data
+     * @param  string  $format
+     * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
-     * @throws \Exception
      */
     public function create(array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
@@ -542,11 +644,14 @@ class Tripit
     }
 
     /**
-     * @throws \Exception
+     * @return bool|array<string|int, mixed>|string
      */
     public function get_request_token(): bool|array|string
     {
         $response = $this->doRequest('/oauth/request_token');
+        if (!is_string($response)) {
+            return false;
+        }
         if ($this->httpCode === 200) {
             $request_token = [];
             parse_str($response, $request_token);
@@ -558,11 +663,14 @@ class Tripit
     }
 
     /**
-     * @throws \Exception
+     * @return bool|array<string|int, mixed>|string
      */
     public function get_access_token(): bool|array|string
     {
         $response = $this->doRequest('/oauth/access_token');
+        if (!is_string($response)) {
+            return false;
+        }
         if ($this->httpCode === 200) {
             $access_token = [];
             parse_str($response, $access_token);
