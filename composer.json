@@ -38,7 +38,8 @@
     "phpunit": "phpunit",
     "phpstan": "phpstan analyse Src --level=9",
     "rector": "rector",
-    "phpcs": "php-cs-fixer fix Src"
+    "phpcs": "php-cs-fixer fix Src",
+    "cscheck": "php-cs-fixer check Src"
   },
   "config": {
     "lock": false,

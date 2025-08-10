@@ -274,13 +274,13 @@ class Tripit
     }
 
     /**
-     * @param  array<string, string|int>  $filter
+     * @param  array<string, string|int>|null  $filter
      * @return array<int|string, mixed>|\SimpleXMLElement
      * @throws \JsonException
      */
-    public function get_profile(array $filter = null): \SimpleXMLElement|array
+    public function get_profile(?array $filter = null): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, $filter);
+        return $this->parseCommand(__FUNCTION__, urlArgs: $filter);
     }
 
     /**
