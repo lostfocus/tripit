@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Lostfocus\Tripit;
@@ -152,8 +153,8 @@ class OAuthConsumerCredential implements CredentialInterface
     private function getSignableParameters(array $params): string
     {
         // Remove oauth_signature if present
-        if (isset ($params['oauth_signature'])) {
-            unset ($params['oauth_signature']);
+        if (isset($params['oauth_signature'])) {
+            unset($params['oauth_signature']);
         }
 
         // Urlencode both keys and values
