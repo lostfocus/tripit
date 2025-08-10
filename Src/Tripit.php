@@ -5,17 +5,10 @@ namespace Lostfocus\Tripit;
 
 class Tripit
 {
-    private CredentialInterface $credential;
-    private string $apiVersion;
-    private string $apiUrl;
-
     private ?int $httpCode = null;
 
-    public function __construct(CredentialInterface $credential, string $apiUrl = 'https://api.tripit.com', string $apiVersion = 'v1')
+    public function __construct(private CredentialInterface $credential, private string $apiUrl = 'https://api.tripit.com', private string $apiVersion = 'v1')
     {
-        $this->credential = $credential;
-        $this->apiVersion = $apiVersion;
-        $this->apiUrl = $apiUrl;
     }
 
     /**
@@ -74,18 +67,18 @@ class Tripit
      */
     private function doRequest(string $verb, ?string $entity = null, ?array $urlArgs = null, ?array $postArgs = null): bool|string
     {
-        if (in_array($verb, array('/oauth/request_token', '/oauth/access_token'))) {
+        if (in_array($verb, ['/oauth/request_token', '/oauth/access_token'])) {
             $baseUrl = $this->apiUrl.$verb;
         } elseif ($entity) {
-            $baseUrl = implode('/', array($this->apiUrl, $this->apiVersion, $verb, $entity));
+            $baseUrl = implode('/', [$this->apiUrl, $this->apiVersion, $verb, $entity]);
         } else {
-            $baseUrl = implode('/', array($this->apiUrl, $this->apiVersion, $verb));
+            $baseUrl = implode('/', [$this->apiUrl, $this->apiVersion, $verb]);
         }
 
         $args = null;
         if ($urlArgs) {
             $args = $urlArgs;
-            $pairs = array();
+            $pairs = [];
             foreach ($urlArgs as $name => $value) {
                 $pairs[] = urlencode((string)$name).'='.urlencode((string)$value);
             }
@@ -479,7 +472,7 @@ class Tripit
      */
     public function replace_air(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
+        return $this->parseCommand(__FUNCTION__, null, ['id' => $id, 'format' => $format, $format => $data]);
     }
 
     /**
@@ -491,7 +484,7 @@ class Tripit
      */
     public function replace_lodging(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
+        return $this->parseCommand(__FUNCTION__, null, ['id' => $id, 'format' => $format, $format => $data]);
     }
 
     /**
@@ -503,7 +496,7 @@ class Tripit
      */
     public function replace_car(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
+        return $this->parseCommand(__FUNCTION__, null, ['id' => $id, 'format' => $format, $format => $data]);
     }
 
     /**
@@ -515,7 +508,7 @@ class Tripit
      */
     public function replace_rail(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
+        return $this->parseCommand(__FUNCTION__, null, ['id' => $id, 'format' => $format, $format => $data]);
     }
 
     /**
@@ -527,7 +520,7 @@ class Tripit
      */
     public function replace_transport(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
+        return $this->parseCommand(__FUNCTION__, null, ['id' => $id, 'format' => $format, $format => $data]);
     }
 
     /**
@@ -539,7 +532,7 @@ class Tripit
      */
     public function replace_cruise(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
+        return $this->parseCommand(__FUNCTION__, null, ['id' => $id, 'format' => $format, $format => $data]);
     }
 
     /**
@@ -551,7 +544,7 @@ class Tripit
      */
     public function replace_restaurant(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
+        return $this->parseCommand(__FUNCTION__, null, ['id' => $id, 'format' => $format, $format => $data]);
     }
 
     /**
@@ -563,7 +556,7 @@ class Tripit
      */
     public function replace_activity(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
+        return $this->parseCommand(__FUNCTION__, null, ['id' => $id, 'format' => $format, $format => $data]);
     }
 
     /**
@@ -575,7 +568,7 @@ class Tripit
      */
     public function replace_note(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
+        return $this->parseCommand(__FUNCTION__, null, ['id' => $id, 'format' => $format, $format => $data]);
     }
 
     /**
@@ -587,7 +580,7 @@ class Tripit
      */
     public function replace_map(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
+        return $this->parseCommand(__FUNCTION__, null, ['id' => $id, 'format' => $format, $format => $data]);
     }
 
     /**
@@ -599,7 +592,7 @@ class Tripit
      */
     public function replace_directions(string|int $id, array $data, string $format = 'xml'): \SimpleXMLElement|array
     {
-        return $this->parseCommand(__FUNCTION__, null, array('id' => $id, 'format' => $format, $format => $data));
+        return $this->parseCommand(__FUNCTION__, null, ['id' => $id, 'format' => $format, $format => $data]);
     }
 
     /**

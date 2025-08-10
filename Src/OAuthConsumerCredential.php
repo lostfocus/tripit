@@ -7,18 +7,12 @@ class OAuthConsumerCredential implements CredentialInterface
 {
     public const OAUTH_SIGNATURE_METHOD = 'HMAC-SHA1';
     public const OAUTH_VERSION = '1.0';
-
-    private string $oauthConsumerKey;
-    private string $oauthConsumerSecret;
     private string $oauthToken;
     private string $oauthTokenSecret;
     private string $oauthRequestorId;
 
-    public function __construct(string $oauthConsumerKey, string $oauthConsumerSecret, string $oauthTokenOrRequestorId = '', string $oauthTokenSecret = '')
+    public function __construct(private string $oauthConsumerKey, private string $oauthConsumerSecret, string $oauthTokenOrRequestorId = '', string $oauthTokenSecret = '')
     {
-        $this->oauthConsumerKey = $oauthConsumerKey;
-        $this->oauthConsumerSecret = $oauthConsumerSecret;
-
         $this->oauthToken = $this->oauthTokenSecret = $this->oauthRequestorId = '';
         if ($oauthTokenOrRequestorId && $oauthTokenSecret) {
             $this->oauthToken = $oauthTokenOrRequestorId;
@@ -59,7 +53,7 @@ class OAuthConsumerCredential implements CredentialInterface
     public function authorize(\CurlHandle $curl, string $httpMethod, string $realm, string $baseUrl, ?array $args = null): \CurlHandle
     {
         $authorization_header = $this->generateAuthorizationHeader($httpMethod, $realm, $baseUrl, $args);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: '.$authorization_header));
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: '.$authorization_header]);
 
         return $curl;
     }
@@ -100,13 +94,7 @@ class OAuthConsumerCredential implements CredentialInterface
     {
         $httpMethod = strtoupper($httpMethod);
 
-        $parameters = array(
-            'oauth_consumer_key' => $this->oauthConsumerKey,
-            'oauth_nonce' => OAuthUtil::generate_nonce(),
-            'oauth_timestamp' => OAuthUtil::generate_timestamp(),
-            'oauth_signature_method' => self::OAUTH_SIGNATURE_METHOD,
-            'oauth_version' => self::OAUTH_VERSION,
-        );
+        $parameters = ['oauth_consumer_key' => $this->oauthConsumerKey, 'oauth_nonce' => OAuthUtil::generate_nonce(), 'oauth_timestamp' => OAuthUtil::generate_timestamp(), 'oauth_signature_method' => self::OAUTH_SIGNATURE_METHOD, 'oauth_version' => self::OAUTH_VERSION];
 
         if ($this->oauthToken !== '') {
             $parameters['oauth_token'] = $this->oauthToken;
