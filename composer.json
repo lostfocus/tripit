@@ -1,7 +1,7 @@
 {
   "name": "lostfocus/tripit",
   "type": "library",
-  "description": "Client for the Tripit Library",
+  "description": "Client for the Tripit API",
   "homepage": "https://github.com/lostfocus",
   "license": "MIT",
   "keywords": ["tripit"],
