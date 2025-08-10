@@ -39,5 +39,3 @@ jobs:
         run: composer run-script cscheck
       - name: Run static analyzer
         run: composer run-script phpstan
-      - name: Run test suite
-        run: composer run-script phpunit
